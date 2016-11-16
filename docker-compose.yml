@@ -1,0 +1,35 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.4.1
+    ports:
+      - "5432:5432"
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+  webapp:
+    build: ./webapp/
+    command: rails server --port 3001 --binding 0.0.0.0
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./webapp:/webapp
+  api:
+    build: ./api/
+    command: rails server --port 3002 --binding 0.0.0.0
+    links:
+      - db
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./api:/api
+  other-api:
+    build: ./other-api/
+    command: rails server --port 3003 --binding 0.0.0.0
+    links:
+      - mongodb
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./other-api:/other-api
